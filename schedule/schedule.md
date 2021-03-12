@@ -1,6 +1,6 @@
 ---
+title: "Biostats 285"
 layout: course
-title: Biostats 285
 ---
 
 ## Course Schedule
