@@ -5,7 +5,7 @@ title: Biostats 285
 
 ## Course Schedule
 
-Biomath 285 _tentative_ schedule and handouts (expect frequent updates)
+Biostats 285 _tentative_ schedule and handouts (expect frequent updates)
 
 Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833 and enter meeting ID `712 056 6052`
 
