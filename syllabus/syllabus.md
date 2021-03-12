@@ -14,7 +14,7 @@ This 4-unit course covers recent developments in the Markov chain Monte Carlo (M
 The first portion of this course includes lectures and textbook reading assignments. After this, assignments include the reading of scholarly papers, and the majority of class time will be spent discussing these papers.  Although practical implementation is not emphasized, a final project involves the rigorous implementation of one or more of the methods encountered during the quarter.
 
 
-### Lecture and Practicals
+### Meetings
 
 Tues, 1-230pm @ Zoom <https://ucla.zoom.us/j/7120566052>\
 Thur, 1-230pm @ Zoom <https://ucla.zoom.us/j/7120566052>
