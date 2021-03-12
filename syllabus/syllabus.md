@@ -3,7 +3,7 @@ layout: course
 title: Biostats 285
 ---
 
-# Biostats 285 - Advanced Bayesian Computing - Spring 2021
+# Advanced Bayesian Computing - Spring 2021
 
 ## Syllabus
 
