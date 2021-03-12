@@ -1,5 +1,5 @@
 ---
-title: "Biostats 285"
+title: Biostats 285
 layout: course
 ---
 
