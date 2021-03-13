@@ -20,4 +20,4 @@ Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833
 |  7 | 5/11, 5/13 | Nonreversible MCMC | | [Bouncy particle sampler](https://ucla-biostats-285.github.io/reading/BPS.pdf),  [Piecewise deterministc Markov processes](https://ucla-biostats-285.github.io/reading/piecewiseDeterministic.pdf)| Abstract, due 5/13
 |  8 | 5/18, 5/20 | Discrete state spaces | | [Informed proposals for local MCMC in discrete spaces](https://ucla-biostats-285.github.io/reading/zanella2020.pdf) |
 |  9 | 5/25, 5/27   | Multidimensional state spaces | |[Reversible jump MCMC](https://ucla-biostats-285.github.io/reading/reversibleJump.pdf), [Nonreversible Jump Algorithms for Bayesian Nested Model Selection](https://ucla-biostats-285.github.io/reading/nonreversibleJump.pdf)
-| 10 | 6/1, 6/3  | Big Ideas | | |Final project, due 6/3
+| 10 | 6/1, 6/3  | Guest Lecture: [Babak Shahbaba, UC Irvine Statistics](https://www.ics.uci.edu/~babaks/) | | |Final project, due 6/3
