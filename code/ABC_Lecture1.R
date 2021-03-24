@@ -110,3 +110,54 @@ rejection_sampler(n=1000000,M=pi/2) # and collect many samples
 ####
 #
 
+
+
+
+
+
+
+
+#
+####
+####### finite markov chain
+####
+#
+library(markovchain)
+
+Q <- matrix(c(0,0,0.5,1,0.2,0.5,0,0.8,0),3,3)  # transition matrix
+mc <- new('markovchain',
+                     transitionMatrix = Q, # These are the transition probabilities of a random industry
+                     states = c('A','B','C'))
+
+layout <- matrix(c(-2,0,0,1,2,0), ncol = 2, byrow = TRUE)
+plot(mc, layout = layout)
+
+# rows sum to 1
+Q %*% c(1,1,1)
+
+# simulate 1000 steps
+p <- c(1,1,1)/3
+for (i in 1:1000) {
+  p <- p %*% Q
+}
+p
+sum(p) # sanity check
+p == p %*% Q # is stationary distribution?
+
+# different starting values
+p <- c(1,0,0)
+for (i in 1:1000) {
+  p <- p %*% Q
+}
+p
+sum(p) # sanity check
+p == p %*% Q 
+
+eig.obj <- eigen(t(Q))
+eig.obj$values # hard to read
+Mod(eig.obj$values)
+
+- eig.obj$vectors * sqrt(sum(p^2)) # r scales to norm 1
+
+
+
