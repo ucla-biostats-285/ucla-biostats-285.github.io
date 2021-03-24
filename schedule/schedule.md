@@ -18,7 +18,7 @@ Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833
 |  5 | 4/27, 4/29   | MCMC and neural networks | | [HMC using surrogate functions](https://ucla-biostats-285.github.io/reading/Zhang2017.pdf), [Generalizing HMC with neural networks](https://ucla-biostats-285.github.io/reading/Levy2018.pdf)
 |  6 | 5/4, 5/6  | Subsampling MCMC | | [Stochastic gradient Langevin dynamics](https://ucla-biostats-285.github.io/reading/WellingTeh2011.pdf), [Stochastic gradient MCMC](https://ucla-biostats-285.github.io/reading/sgMCMC.pdf)
 |  7 | 5/11 | Nonreversible MCMC | | [Bouncy particle sampler](https://ucla-biostats-285.github.io/reading/BPS.pdf),  [Piecewise deterministc Markov processes](https://ucla-biostats-285.github.io/reading/piecewiseDeterministic.pdf)| Abstract, due 5/13
-| 7 | 5/13 | Guest Lecture: Theory and practice of Nonreversible MCMC [Zhenyu Zhang, UCLA Biostatistics](https://sites.google.com/view/zhenyuzhang) |||
+| 7 | 5/13 | Guest Lecture: Nonreversible MCMC [Zhenyu Zhang, UCLA Biostatistics](https://sites.google.com/view/zhenyuzhang) |||
 |  8 | 5/18, 5/20 | Discrete state spaces | | [Informed proposals for local MCMC in discrete spaces](https://ucla-biostats-285.github.io/reading/zanella2020.pdf) |
 | 9 | 5/25 | Guest Lecture: Probabilistic Circuits [Guy Van den Broeck, UCLA CS](https://web.cs.ucla.edu/~guyvdb/) |||
 |  9 | 5/27   | Multidimensional state spaces | |[Reversible jump MCMC](https://ucla-biostats-285.github.io/reading/reversibleJump.pdf), [Nonreversible Jump Algorithms for Bayesian Nested Model Selection](https://ucla-biostats-285.github.io/reading/nonreversibleJump.pdf)
