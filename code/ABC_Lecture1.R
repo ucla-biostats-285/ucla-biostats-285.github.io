@@ -19,7 +19,7 @@ abline(v=mean(thetas),col="red",lwd=3)
 qqplot(x=thetas, y=rexp(10000,rate=5))
 abline(a=0,b=1,col="red",lwd=3)
 
-
+################################################################################
 #
 ####
 ####### rejection sampler gets pi
@@ -51,7 +51,7 @@ abline(h=pi,col="red",lwd=3)  # the more samples the better
 plot(abs(estimates-pi),type = "l")
 lines(sqrt(1/(5:2000)),col="red",lwd=3) # diminishing returns
 
-
+################################################################################
 #
 ####
 ####### rejection samplers for sine(0,pi)
@@ -103,20 +103,56 @@ rejection_sampler(n=100000,M=pi/2)
 rejection_sampler(n=1000000,M=pi/2) # and collect many samples
 
 
-
+################################################################################
 #
 ####
 ####### importance sampler: Gaussian and t-distribution
 ####
 #
 
+# first use gaussian to sample t-distribution
+N <- 100
+thetas <- rnorm(N)
+unnormalizedWeights <-  dt(thetas,df=2)/dnorm(thetas)
+normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
+plot(normalizedWeights)
 
+estimate <- sum(thetas * normalizedWeights) # compute mean of t distribution (0)
+estimate
 
+# make function and get variance of estimator
+gaussiansTargetT <- function(N,maxIts) {
+  estimates <- rep(0,maxIts)
+  for(s in 1:maxIts) {
+    thetas <- rnorm(N)
+    unnormalizedWeights <-  dt(thetas,df=2)/dnorm(thetas)
+    normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
+    estimates[s] <- sum(thetas * normalizedWeights) # compute mean of t distribution (0)
+  }
 
+  return(estimates)
+}
+ests <- gaussiansTargetT(N=100,maxIts=1000)
+plot(density(ests))
+var(ests)
 
+# now t targets gaussian
+tTargetsGaussian <- function(N,maxIts) {
+  estimates <- rep(0,maxIts)
+  for(s in 1:maxIts) {
+    thetas <- rt(N,df=2)
+    unnormalizedWeights <- dnorm(thetas) / dt(thetas,df=2)
+    normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
+    estimates[s] <- sum(thetas * normalizedWeights) # compute mean of t distribution (0)
+  }
+  
+  return(estimates)
+}
+ests <- tTargetsGaussian(N=100,maxIts=1000)
+plot(density(ests))
+var(ests)
 
-
-
+################################################################################
 #
 ####
 ####### finite markov chain
@@ -126,7 +162,7 @@ library(markovchain)
 
 Q <- matrix(c(0,0,0.5,1,0.2,0.5,0,0.8,0),3,3)  # transition matrix
 mc <- new('markovchain',
-                     transitionMatrix = Q, # These are the transition probabilities of a random industry
+                     transitionMatrix = Q, 
                      states = c('A','B','C'))
 
 layout <- matrix(c(-2,0,0,1,2,0), ncol = 2, byrow = TRUE)
@@ -159,5 +195,77 @@ Mod(eig.obj$values)
 
 - eig.obj$vectors * sqrt(sum(p^2)) # r scales to norm 1
 
+
+################################################################################
+#
+####
+####### metropolis
+####
+#
+
+D <- 4
+maxIts <- 1000
+
+# target function is proportional to log pdf of D-dimensional spherical Gaussian
+target <- function(theta) {
+  output <- mvtnorm::dmvnorm(theta, log=TRUE)
+  return(output)
+}
+
+chain <- matrix(0,maxIts,D) 
+chain[1,] <- - 10 # bad idea for a starting value
+
+for(s in 2:maxIts) {
+  thetaStar <- rnorm(n=D,mean=chain[s-1,])
+  u         <- runif(1)
+  
+  logA      <- target(thetaStar) - target(chain[s-1,]) # target on log scale
+  
+  if(log(u) < logA) {
+    chain[s,] <- thetaStar
+  } else {
+    chain[s,] <- chain[s-1,]
+  }
+}
+
+plot(chain[,1],type="l") # not bad mixing
+plot(density(chain[,1])) # meh
+
+# make function and try with different maxIts
+
+metropolis <- function(maxIts,D) {
+  chain <- matrix(0,maxIts,D) 
+  chain[1,] <- - 10 # bad idea for a starting value
+  
+  for(s in 2:maxIts) {
+    thetaStar <- rnorm(n=D,mean=chain[s-1,]) # proposal
+    u         <- runif(1)
+    
+    logA      <- target(thetaStar) - target(chain[s-1,]) # target on log scale
+    if(log(u) < logA) {
+      chain[s,] <- thetaStar
+    } else {
+      chain[s,] <- chain[s-1,]
+    }
+    
+    if(s %% 100 == 0) cat(s,"\n")
+  }
+  
+  return(chain)
+}
+
+results <- metropolis(10000, D)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+
+
+results <- metropolis(100000, D)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+
+D <- 100 # curse of dimensionality
+results <- metropolis(10000, D)
+plot(results[,1],type="l")
+plot(density(results[,1]))  # how to choose proposal variance?
 
 
