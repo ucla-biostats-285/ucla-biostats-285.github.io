@@ -11,7 +11,7 @@ Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833
 
 | Week | Class Dates | Tentative Topic | Posts | Readings | Assignments
 |:-----------|:-----------|:------------|:------------|:------------|:------------|
-|  1 | 3/30, 4/1   | Introduction to MCMC, Metropolis-Hastings and Gibbs sampling | [preclass](https://ucla-biostats-285.github.io/biostats285spring2021/2021/03/12/preclass.html) | [BIDA Ch. 6](https://ucla-biostats-285.github.io/reading/BIDA.pdf), Supplementary reading: [Geyer's intro to MCMC](https://ucla-biostats-285.github.io/reading/GeyerIntro.pdf), [Tierney (1994)](https://ucla-biostats-285.github.io/reading/Tierney.pdf)
+|  1 | 3/30, 4/1   | Monte Carlo and classical MCMC | [preclass](https://ucla-biostats-285.github.io/biostats285spring2021/2021/03/12/preclass.html) | [BIDA Ch. 6](https://ucla-biostats-285.github.io/reading/BIDA.pdf), Supplementary reading: [Geyer's intro to MCMC](https://ucla-biostats-285.github.io/reading/GeyerIntro.pdf), [Tierney (1994)](https://ucla-biostats-285.github.io/reading/Tierney.pdf)
 |  2 | 4/6, 4/8 | Adaptive MCMC | | [Optimal Proposal Distributions and Adaptive MCMC](https://ucla-biostats-285.github.io/reading/AdaptiveMCMC.pdf)
 |  3 | 4/13, 4/15 | Hamiltonian Monte Carlo | | [MCMC using Hamiltonian dynamics](https://ucla-biostats-285.github.io/reading/Neal2011.pdf)
 |  4 | 4/20, 4/22 | Riemannian manifold Hamiltonian Monte Carlo | | [Riemann manifold Langevin and HMC methods](https://ucla-biostats-285.github.io/reading/RMHMC.pdf)
