@@ -11,8 +11,8 @@ Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833
 
 | Week | Class Dates | Tentative Topic | Posts | Readings | Assignments
 |:-----------|:-----------|:------------|:------------|:------------|:------------|
-|  1 | 3/30, 4/1   | Review: Monte Carlo and classical MCMC ([slides](https://ucla-biostats-285.github.io/slides/ABC_Lecture1.pdf)) | [preclass](https://ucla-biostats-285.github.io/biostats285spring2021/2021/03/12/preclass.html) | [BIDA Ch. 6](https://ucla-biostats-285.github.io/reading/BIDA.pdf), Supplementary reading: [Geyer's intro to MCMC](https://ucla-biostats-285.github.io/reading/GeyerIntro.pdf), [Tierney (1994)](https://ucla-biostats-285.github.io/reading/Tierney.pdf)
-|  2 | 4/6, 4/8 | Adaptive MCMC | | [Optimal Proposal Distributions and Adaptive MCMC](https://ucla-biostats-285.github.io/reading/AdaptiveMCMC.pdf)
+|  1 | 3/30, 4/1   | Review: Monte Carlo and classical MCMC ([slides](https://ucla-biostats-285.github.io/slides/ABC_Lecture1.pdf)) | [preclass](https://ucla-biostats-285.github.io/biostats285spring2021/2021/03/12/preclass.html) | [BIDA Ch. 6](https://ucla-biostats-285.github.io/reading/BIDA.pdf), Further reading: [Geyer's intro to MCMC](https://ucla-biostats-285.github.io/reading/GeyerIntro.pdf), [Tierney (1994)](https://ucla-biostats-285.github.io/reading/Tierney.pdf)
+|  2 | 4/6, 4/8 | Adaptive MCMC | | [Optimal Proposal Distributions and Adaptive MCMC](https://ucla-biostats-285.github.io/reading/AdaptiveMCMC.pdf), Further reading: [A tutorial](https://ucla-biostats-285.github.io/reading/andrieu-thoms.pdf)
 |  3 | 4/13, 4/15 | Hamiltonian Monte Carlo | | [MCMC using Hamiltonian dynamics](https://ucla-biostats-285.github.io/reading/Neal2011.pdf)
 |  4 | 4/20, 4/22 | Riemannian manifold Hamiltonian Monte Carlo | | [Riemann manifold Langevin and HMC methods](https://ucla-biostats-285.github.io/reading/RMHMC.pdf)
 |  5 | 4/27, 4/29   | MCMC and neural networks | | [HMC using surrogate functions](https://ucla-biostats-285.github.io/reading/Zhang2017.pdf), [Generalizing HMC with neural networks](https://ucla-biostats-285.github.io/reading/Levy2018.pdf)
