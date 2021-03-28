@@ -269,3 +269,114 @@ plot(results[,1],type="l")
 plot(density(results[,1]))  # how to choose proposal variance?
 
 
+################################################################################
+#
+####
+####### metropolis hastings (for truncated normal target)
+####
+#
+
+D <- 4
+maxIts <- 1000
+
+# target function is proportional to log pdf of D-dimensional spherical Gaussian
+target <- function(theta) {
+  output <- mvtnorm::dmvnorm(theta, log=TRUE)
+  return(output)
+}
+
+chain <- matrix(0,maxIts,D) 
+chain[1,] <- 50 # bad idea for a starting value
+
+for(s in 2:maxIts) {
+  thetaStar <- truncnorm::rtruncnorm(n=D, a=0, b=Inf, mean = chain[s-1,], sd = 1)
+  u         <- runif(1)
+  
+  logA      <- target(thetaStar) - target(chain[s-1,]) + # targets
+               sum(log(truncnorm::dtruncnorm(x=chain[s-1,],a=0, mean=thetaStar))) -
+               sum(log(truncnorm::dtruncnorm(x=thetaStar,a=0, mean=chain[s-1,])))
+                
+  if(log(u) < logA) {
+    chain[s,] <- thetaStar
+  } else {
+    chain[s,] <- chain[s-1,]
+  }
+}
+
+plot(chain[,1],type="l") # finds the high density area
+hist(chain[,1],freq = FALSE,breaks = 20)
+x <- seq(from=0,to=4,length.out = 1000)
+lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
+
+# now with better starting values
+chain <- matrix(0,maxIts,D) 
+chain[1,] <- 1 # bad idea for a starting value
+
+for(s in 2:maxIts) {
+  thetaStar <- truncnorm::rtruncnorm(n=D, a=0, b=Inf, mean = chain[s-1,], sd = 1)
+  u         <- runif(1)
+  
+  logA      <- target(thetaStar) - target(chain[s-1,]) + # targets
+    sum(log(truncnorm::dtruncnorm(x=chain[s-1,],a=0, mean=thetaStar))) -
+    sum(log(truncnorm::dtruncnorm(x=thetaStar,a=0, mean=chain[s-1,])))
+  
+  if(log(u) < logA) {
+    chain[s,] <- thetaStar
+  } else {
+    chain[s,] <- chain[s-1,]
+  }
+}
+
+plot(chain[,1],type="l") # ok!
+hist(chain[,1],freq = FALSE,breaks = 20)
+lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
+
+# make function and try with different maxIts
+
+metropolis_hastings <- function(maxIts,D) {
+  chain <- matrix(0,maxIts,D) 
+  chain[1,] <- 1 
+  
+  for(s in 2:maxIts) {
+    thetaStar <- truncnorm::rtruncnorm(n=D, a=0, b=Inf, mean = chain[s-1,], sd = 1)
+    u         <- runif(1)
+    
+    logA      <- target(thetaStar) - target(chain[s-1,]) + # targets
+      sum(log(truncnorm::dtruncnorm(x=chain[s-1,],a=0, mean=thetaStar))) -
+      sum(log(truncnorm::dtruncnorm(x=thetaStar,a=0, mean=chain[s-1,])))
+    
+    if(log(u) < logA) {
+      chain[s,] <- thetaStar
+    } else {
+      chain[s,] <- chain[s-1,]
+    }
+    
+    if(s %% 100 == 0) cat(s,"\n")
+  }
+  
+  return(chain)
+}
+
+results <- metropolis_hastings(10000, D)
+plot(results[,1],type="l")
+hist(results[,1],freq = FALSE,breaks = 20)
+lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
+
+results <- metropolis_hastings(100000, D)
+plot(results[,1],type="l")
+hist(results[,1],freq = FALSE,breaks = 20)
+lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
+
+D <- 100 # curse of dimensionality
+results <- metropolis_hastings(10000, 20)
+hist(results[,1],freq = FALSE,breaks = 20)
+lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
+
+################################################################################
+#
+####
+####### gibbs sampler
+####
+#
+
+
