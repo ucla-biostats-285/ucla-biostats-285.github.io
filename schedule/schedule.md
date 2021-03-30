@@ -16,7 +16,8 @@ Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833
 |  3 | 4/13, 4/15 | Hamiltonian Monte Carlo | | [MCMC using Hamiltonian dynamics](https://ucla-biostats-285.github.io/reading/Neal2011.pdf)
 |  4 | 4/20, 4/22 | Riemannian manifold Hamiltonian Monte Carlo | | [Riemann manifold Langevin and HMC methods](https://ucla-biostats-285.github.io/reading/RMHMC.pdf)
 |  5 | 4/27, 4/29   | MCMC and neural networks | | [HMC using surrogate functions](https://ucla-biostats-285.github.io/reading/Zhang2017.pdf), [Generalizing HMC with neural networks](https://ucla-biostats-285.github.io/reading/Levy2018.pdf)
-|  6 | 5/4, 5/6  | Subsampling MCMC | | [Stochastic gradient Langevin dynamics](https://ucla-biostats-285.github.io/reading/WellingTeh2011.pdf), [Stochastic gradient MCMC](https://ucla-biostats-285.github.io/reading/sgMCMC.pdf)
+|  6 | 5/4 | Subsampling MCMC | | [Stochastic gradient Langevin dynamics](https://ucla-biostats-285.github.io/reading/WellingTeh2011.pdf), [Stochastic gradient MCMC](https://ucla-biostats-285.github.io/reading/sgMCMC.pdf)
+| 6 | 5/6 | Guest Lecture [Matt Hoffman, Google Research](http://matthewdhoffman.com/) |||
 |  7 | 5/11 | Nonreversible MCMC | | [Bouncy particle sampler](https://ucla-biostats-285.github.io/reading/BPS.pdf),  [Piecewise deterministc Markov processes](https://ucla-biostats-285.github.io/reading/piecewiseDeterministic.pdf)| Abstract, due 5/13
 | 7 | 5/13 | Guest Lecture: Nonreversible MCMC [Zhenyu Zhang, UCLA Biostatistics](https://sites.google.com/view/zhenyuzhang) |||
 |  8 | 5/18, 5/20 | Discrete state spaces | | [Informed proposals for local MCMC in discrete spaces](https://ucla-biostats-285.github.io/reading/zanella2020.pdf) |
