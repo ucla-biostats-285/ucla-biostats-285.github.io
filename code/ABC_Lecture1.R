@@ -152,6 +152,64 @@ ests <- tTargetsGaussian(N=100,maxIts=1000)
 plot(density(ests))
 var(ests)
 
+
+################################################################################
+#
+####
+####### curse of dimensionality (importance sampling)
+####
+#
+
+library(mvtnorm)
+
+# high dimensional probability density functions are small
+x <- rnorm(100)
+pdfs <- dnorm(x)
+joint_pdf <- prod(pdfs)
+
+x <- rnorm(600)
+pdfs <- dnorm(x)
+joint_pdf <- prod(pdfs)
+
+# ratios of small numbers do not behave well
+thetas <- rmvnorm(n=1000,sigma = diag(100),mean = rep(1,100))
+dim(thetas)
+
+unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,100))
+normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
+plot(normalizedWeights)
+plot(density(normalizedWeights))
+summary(normalizedWeights) # underflow
+
+estimate <- colSums(thetas * normalizedWeights) # compute mean of t normals (0)
+plot(density(estimate))
+
+# higher dim = 200
+thetas <- rmvnorm(n=1000,sigma = diag(200),mean = rep(1,200))
+dim(thetas)
+
+unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,200))
+normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
+plot(normalizedWeights)
+plot(density(normalizedWeights))
+summary(normalizedWeights) # underflow
+
+estimate <- colSums(thetas * normalizedWeights) # compute mean of t normals (0)
+plot(density(estimate))
+
+# higher dim = 200 / overpower with 10000 samples
+thetas <- rmvnorm(n=10000,sigma = diag(200),mean = rep(1,200))
+dim(thetas)
+
+unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,200))
+normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
+plot(normalizedWeights)
+plot(density(normalizedWeights))
+summary(normalizedWeights) # underflow
+
+estimate <- colSums(thetas * normalizedWeights) # compute mean of t normals (0)
+plot(density(estimate))
+
 ################################################################################
 #
 ####
@@ -171,7 +229,7 @@ plot(mc, layout = layout)
 # rows sum to 1
 Q %*% c(1,1,1)
 
-# simulate 1000 steps
+# marginal probability after 1000 steps
 p <- c(1,1,1)/3
 for (i in 1:1000) {
   p <- p %*% Q
@@ -195,6 +253,25 @@ Mod(eig.obj$values)
 
 - eig.obj$vectors * sqrt(sum(p^2)) # r scales to norm 1
 
+
+# actually simulate from the markov chain 
+n <- 10000
+chain <- rep(0,n)
+chain[1] <- 1
+for (i in 2:n) {
+  chain[i] <- sample(1:3,size = 1,prob = Q[chain[i-1],])
+}
+plot(chain) # not instructive
+hist(chain)
+p*n # stationary probabilities * iterations
+
+# get mean of f(x)=x^2
+1/n*sum(chain^2)
+
+# get true mean
+sum(p*c(1,2,3)^2)
+
+# so, what's the point?
 
 ################################################################################
 #
@@ -375,9 +452,33 @@ lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
 ################################################################################
 #
 ####
-####### gibbs sampler
+####### gibbs sampler for simplest Gaussian model
 ####
 #
 
+N <- 10 # data
+Y <- rnorm(N,mean = 10)
 
+mu0 <- 0
+tau20 <- 100
+
+alpha <- 1
+beta  <- 1
+
+maxIts <- 100
+mus    <- rep(0,maxIts) # chains
+mus[1] <- mu0
+sigma2s <- rep(0,maxIts)
+sigma2s[1] <- tau20
+
+for (i in 2:maxIts) {
+  # mu update
+  Var <- 1/(1/tau20 + N/sigma2s[i-1])
+  Mean <- (mu0/tau20+ sum(Y)/sigma2s[i-1])*Var
+  mus[i] <- rnorm(n=1,mean=Mean,sd=sqrt(Var))
+  
+  # sigma2 update
+  
+  
+}
 
