@@ -137,6 +137,13 @@ plot(density(ests))
 var(ests)
 
 # now t targets gaussian
+N <- 100
+thetas <- rt(N,df=2)
+unnormalizedWeights <- dnorm(thetas) / dt(thetas,df=2)
+normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
+plot(normalizedWeights)
+sum(thetas * normalizedWeights)
+
 tTargetsGaussian <- function(N,maxIts) {
   estimates <- rep(0,maxIts)
   for(s in 1:maxIts) {
