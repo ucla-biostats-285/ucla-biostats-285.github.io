@@ -531,6 +531,188 @@ plot(mus,type="l")
 plot(sigma2s,type="l")  # sometimes data overpowers the prior
 
 
+################################################################################
+#
+####
+####### metropolis with adaptive covariance
+####
+#
+
+recursion <- function(Ct,XbarMinus,Xt,epsilon,sd,t,warmup=100) {
+  if(t>warmup) {
+    XbarT  <- Xt/t + (t-1)/t*XbarMinus
+    CtPlus <- Ct*(t-1)/t + sd/t*( t*XbarMinus%*%t(XbarMinus) -
+                                    (t+1)*XbarT%*%t(XbarT) +
+                                    Xt%*%t(Xt) + epsilon*diag(length(Xt)))
+  } else {
+    XbarT  <- Xt/t + (t-1)/t*XbarMinus
+    CtPlus <- Ct
+  }
+  return(list(CtPlus,XbarT))
+}
+
+randomWalk <- function(N, x0, maxIt=10000,
+                       adaptCov=FALSE) {
+  if(N!=length(x0)) stop("Dimension mismatch.")
+  
+  chain <- matrix(0,maxIt,N)
+  
+  sigma <- 2.4/sqrt(N)
+  Ct <- sigma^2*diag(N) 
+  xbar <- x0
+  
+  accept <- rep(0,maxIt)
+  chain[1,] <- x0
+  for (i in 2:maxIt){
+    if (adaptCov==FALSE) {
+      xStar <- rnorm(N,sd=sigma) + chain[i-1,]
+      if(log(runif(1)) < sum(target(xStar)) -
+         sum(target(chain[i-1,]))){
+        accept[i] <- 1
+        chain[i,] <- xStar
+      } else {
+        chain[i,] <- chain[i-1,]
+      }
+    } else { # with covariance
+      xStar <- as.vector(t(chol(Ct))%*%rnorm(N) + chain[i-1,])
+      if(log(runif(1)) < sum(target(xStar)) -
+         sum(target(as.vector(chain[i-1,])))){
+        accept[i] <- 1
+        chain[i,] <- xStar
+      } else {
+        chain[i,] <- chain[i-1,]
+      }
+      updt <- recursion(Ct=Ct,
+                        XbarMinus=xbar,
+                        Xt=chain[i,],
+                        epsilon = 0.000001,
+                        sd=sigma^2,
+                        t=i,
+                        warmup=maxIt/10)
+      Ct <- updt[[1]]
+      xbar <- updt[[2]]
+    }
+    
+    if(i %% 1000 == 0) cat(i,"\n")
+  }
+  ratio <- sum(accept)/(maxIt-1)
+  cat("Acceptance ratio: ", ratio,"\n")
+  if (adaptCov) {
+    return(list(chain,ratio,sigma,Ct))
+  } else{
+    return(list(chain,ratio,sigma,diag(N)))
+  }
+}
+
+target <- function(theta) { # multivariate standard normal
+  output <- mvtnorm::dmvnorm(theta, log=TRUE)
+  return(output)
+}
+
+#
+###
+#
+library(coda)
 
 
+# 10 dimensions
+N <- 10
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      maxIt = 1000) # acceptance should be 0.234
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
 
+# more its
+N <- 10
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      maxIt = 10000) # acceptance should be 0.234
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+
+# more dimensions
+N <- 100
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      maxIt = 10000) # acceptance should be CLOSER to 0.234
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+
+
+#
+### nasty target
+#
+
+target <- function(theta) { # multivariate standard normal
+  output <- mvtnorm::dmvnorm(theta, sigma = diag(1:length(theta)), log=TRUE)
+  return(output)
+}
+
+# 10 dimensions
+N <- 10
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      maxIt = 1000) 
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+plot(results[[1]][,N],type="l")
+
+# 10 dimensions
+N <- 10
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      maxIt = 10000) 
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+plot(results[[1]][,N],type="l")
+
+# 10 dimensions adapt cov
+N <- 10
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      adaptCov = TRUE,
+                      maxIt = 10000) 
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+plot(results[[1]][,N],type="l")
+
+# longer chains gives more time for adaptation
+N <- 10
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      adaptCov = TRUE,
+                      maxIt = 100000) 
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+plot(results[[1]][,N],type="l")
+
+# more dimensions
+N <- 100
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      adaptCov = FALSE,
+                      maxIt = 10000) 
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+plot(results[[1]][,N],type="l")
+
+# now adapting
+N <- 100
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      adaptCov = TRUE,
+                      maxIt = 10000) 
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+plot(results[[1]][,N],type="l")
+
+# make it beautiful
+N <- 100
+results <- randomWalk(N=N,
+                      x0=rep(0,N),
+                      adaptCov = TRUE,
+                      maxIt = 100000) 
+plot(results[[1]][,1],type="l")
+effectiveSize(as.mcmc(results[[1]]))
+plot(results[[1]][,N],type="l")
