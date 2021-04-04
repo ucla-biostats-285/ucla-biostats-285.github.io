@@ -464,15 +464,15 @@ lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
 #
 
 N <- 10 # data
-Y <- rnorm(N,mean = 10)
+Y <- rnorm(N,mean = 10,sd=sqrt(2))
 
 mu0 <- 0
-tau20 <- 100
+tau20 <- 10
 
 alpha <- 1
 beta  <- 1
 
-maxIts <- 100
+maxIts <- 1000
 mus    <- rep(0,maxIts) # chains
 mus[1] <- mu0
 sigma2s <- rep(0,maxIts)
@@ -485,7 +485,52 @@ for (i in 2:maxIts) {
   mus[i] <- rnorm(n=1,mean=Mean,sd=sqrt(Var))
   
   # sigma2 update
-  
+  resids <- Y-mus[i]
+  sigma2s[i] <- 1/rgamma(n=1,
+                         shape = alpha+N/2,
+                         rate = beta + t(resids)%*%resids/2)
   
 }
+
+plot(mus,type="l")
+plot(sigma2s,type="l")
+
+#
+###
+#
+N <- 100 # more data
+Y <- rnorm(N,mean = 10,sd=sqrt(2))
+
+mu0 <- 0
+tau20 <- 10
+
+alpha <- 1
+beta  <- 1
+
+maxIts <- 1000
+mus    <- rep(0,maxIts) # chains
+mus[1] <- mu0
+sigma2s <- rep(0,maxIts)
+sigma2s[1] <- tau20
+
+for (i in 2:maxIts) {
+  # mu update
+  Var <- 1/(1/tau20 + N/sigma2s[i-1])
+  Mean <- (mu0/tau20+ sum(Y)/sigma2s[i-1])*Var
+  mus[i] <- rnorm(n=1,mean=Mean,sd=sqrt(Var))
+  
+  # sigma2 update
+  resids <- Y-mus[i]
+  sigma2s[i] <- 1/rgamma(n=1,
+                         shape = alpha+N/2,
+                         rate = beta + t(resids)%*%resids/2)
+  
+}
+
+plot(mus,type="l")
+plot(sigma2s,type="l")  # sometimes data overpowers the prior
+
+
+
+
 
