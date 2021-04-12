@@ -306,9 +306,9 @@ for(s in 2:maxIts) {
   logA      <- target(thetaStar) - target(chain[s-1,]) # target on log scale
   
   if(log(u) < logA) {
-    chain[s,] <- thetaStar
+    chain[s,] <- thetaStar # ACCEPT !!
   } else {
-    chain[s,] <- chain[s-1,]
+    chain[s,] <- chain[s-1,] # REJECT !!
   }
 }
 
