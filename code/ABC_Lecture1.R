@@ -394,7 +394,7 @@ lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
 
 # now with better starting values
 chain <- matrix(0,maxIts,D) 
-chain[1,] <- 1 # bad idea for a starting value
+chain[1,] <- 1 # good idea for a starting value
 
 for(s in 2:maxIts) {
   thetaStar <- truncnorm::rtruncnorm(n=D, a=0, b=Inf, mean = chain[s-1,], sd = 1)
@@ -441,6 +441,7 @@ metropolis_hastings <- function(maxIts,D) {
   return(chain)
 }
 
+D <- 4
 results <- metropolis_hastings(10000, D)
 plot(results[,1],type="l")
 hist(results[,1],freq = FALSE,breaks = 20)
@@ -716,3 +717,347 @@ results <- randomWalk(N=N,
 plot(results[[1]][,1],type="l")
 effectiveSize(as.mcmc(results[[1]]))
 plot(results[[1]][,N],type="l")
+
+
+################################################################################
+#
+####
+####### hmc for "standard" multivariate normal
+####
+#
+
+library(coda)
+
+target <- function(theta) {
+  output <- - sum(theta^2)/2
+  return(output)
+}
+
+grad <- function(theta) {
+  output <- - theta #numDeriv::grad(target,theta)
+  return(output)
+}
+
+metropolis <- function(maxIts,D) {
+  chain <- matrix(0,maxIts,D) 
+  chain[1,] <- 0 # good idea for a starting value
+  
+  for(s in 2:maxIts) {
+    thetaStar <- rnorm(n=D,mean=chain[s-1,],sd=2.4/sqrt(D)) # proposal
+    u         <- runif(1)
+    
+    logA      <- target(thetaStar) - target(chain[s-1,]) # target on log scale
+    if(log(u) < logA) {
+      chain[s,] <- thetaStar
+    } else {
+      chain[s,] <- chain[s-1,]
+    }
+    
+    if(s %% 100 == 0) cat(s,"\n")
+  }
+  
+  return(chain)
+}
+
+
+hmc <- function(D, maxIts, stepSize=0.01) {
+
+  chain <- matrix(0,maxIts,D)
+  acceptances <- 0
+  L <- 10 # number of leapfrog steps
+  chain[1,] <- rnorm(D)
+  currentU  <- - target(chain[1,])
+
+  for (i in 2:maxIts) {
+    proposalState    <- chain[i-1,]
+    momentum         <- rnorm(D)
+    currentK   <- sum(momentum^2)/2
+
+    # leapfrog steps
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState)
+    for (l in 1:L) {
+      proposalState <- proposalState + stepSize * momentum
+      if (l!=L) momentum <- momentum + stepSize * grad(proposalState)
+    }
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState)
+    
+    # quantities for accept/reject
+    proposedU = - target(proposalState)
+    proposedK = sum(momentum^2)/2
+    u <- runif(1)
+    
+    if (log(u) < currentU + currentK - proposedU + proposedK) {
+      chain[i,]   <- proposalState
+      currentU    <- proposedU
+      acceptances <- acceptances + 1
+    } else {
+      chain[i,] <- chain[i-1,]
+    }
+    
+    if (i %% 100 == 0) cat("Iteration ", i,"\n") 
+  }
+  
+  cat("Acceptance rate: ", acceptances/(maxIts-1))
+  return(chain)
+}
+
+#
+### D=2
+#
+hmc_results <- hmc(D=2,maxIts = 10000)
+rwm_results <- metropolis(D=2,maxIts = 10000)
+plot(rwm_results[,1],type="l")
+lines(hmc_results[,1],col="red")
+effectiveSize(as.mcmc(rwm_results))
+effectiveSize(as.mcmc(hmc_results)) # RWM crushes HMC!!!
+
+#
+### change hmc stepsize to 0.1
+#
+hmc_results <- hmc(D=2,maxIts = 10000, stepSize = 0.1)
+rwm_results <- metropolis(D=2,maxIts = 10000)
+plot(rwm_results[,1],type="l")
+lines(hmc_results[,1],col="red")
+effectiveSize(as.mcmc(rwm_results))
+effectiveSize(as.mcmc(hmc_results)) # HMC crushes RWM!!!
+
+#
+### change hmc stepsize to 1
+#
+hmc_results <- hmc(D=2,maxIts = 10000, stepSize = 1)
+rwm_results <- metropolis(D=2,maxIts = 10000)
+plot(rwm_results[,1],type="l")
+lines(hmc_results[,1],col="red")
+effectiveSize(as.mcmc(rwm_results))
+effectiveSize(as.mcmc(hmc_results)) # Wait what?!
+plot(hmc_results[,1],type="l")
+lines(rwm_results[,1],col="red")
+
+#
+### D=100
+#
+hmc_results <- hmc(D=100,maxIts = 10000, stepSize = 1)
+rwm_results <- metropolis(D=100,maxIts = 10000)
+effectiveSize(as.mcmc(rwm_results))
+summary(effectiveSize(as.mcmc(rwm_results)))
+summary(effectiveSize(as.mcmc(hmc_results))) # Wait what?!
+plot(hmc_results[,1],type="l")
+lines(rwm_results[,1],col="red")
+
+#
+### D=1000
+#
+hmc_results <- hmc(D=1000,maxIts = 10000, stepSize = 1)
+rwm_results <- metropolis(D=1000,maxIts = 10000)
+summary(effectiveSize(as.mcmc(rwm_results)))
+summary(effectiveSize(as.mcmc(hmc_results)))
+plot(hmc_results[,1],type="l")
+lines(rwm_results[,1],col="red")
+
+################################################################################
+#
+####
+####### HMC with adaptive stepsize (0.9 acceptance rate target)
+####
+#
+
+library(coda)
+
+
+target <- function(theta) {
+  output <- - sum(theta^2)/2
+  return(output)
+}
+
+grad <- function(theta) {
+  output <- - theta #numDeriv::grad(target,theta)
+  return(output)
+}
+
+
+delta <- function(n) {
+  return( min(0.01,n^(-0.5)) )
+}
+
+adapt_hmc <- function(D, maxIts, targetAccept=0.8, stepSize=1, L=20) {
+  
+  chain <- matrix(0,maxIts,D)
+  stepSize <- 1
+  chain[1,] <- rnorm(D)
+  currentU  <- - target(chain[1,])
+  
+  totalAccept <- rep(0,maxIts)
+  Acceptances = 0 # total acceptances within adaptation run (<= SampBound)
+  SampBound = 50   # current total samples before adapting radius
+  SampCount = 0   # number of samples collected (adapt when = SampBound)
+  Proposed = 0
+  
+  for (i in 2:maxIts) {
+    proposalState    <- chain[i-1,]
+    momentum         <- rnorm(D)
+    currentK   <- sum(momentum^2)/2
+    
+    # leapfrog steps
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState)
+    for (l in 1:L) {
+      proposalState <- proposalState + stepSize * momentum
+      if (l!=L) momentum <- momentum + stepSize * grad(proposalState)
+    }
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState)
+    
+    # quantities for accept/reject
+    proposedU = - target(proposalState)
+    proposedK = sum(momentum^2)/2
+    u <- runif(1)
+    
+    if (log(u) < currentU + currentK - proposedU + proposedK) {
+      chain[i,]   <- proposalState
+      currentU    <- proposedU
+      totalAccept[i] <- 1
+      Acceptances = Acceptances + 1
+    } else {
+      chain[i,] <- chain[i-1,]
+    }
+    
+    SampCount <- SampCount + 1
+
+    # tune
+    if (SampCount == SampBound) { 
+      AcceptRatio <- Acceptances / SampBound
+      if ( AcceptRatio > targetAccept ) {
+        stepSize <- stepSize * (1 + delta(i-1))
+      } else {
+        stepSize <- stepSize * (1 - delta(i-1))
+      }
+  
+      SampCount <- 0
+      Acceptances <- 0
+    }
+    
+    
+    if (i %% 100 == 0) cat("Iteration ", i,"\n","stepSize: ", stepSize, "\n") 
+  }
+  
+  cat("Acceptance rate: ", sum(totalAccept)/(maxIts-1))
+  return(chain)
+}
+
+#
+### D=1000, different target accepts
+#
+hmc_results  <- adapt_hmc(D=1000,maxIts = 100000,  targetAccept = 0.234)
+hmc_results <- hmc_results[10001:100000,]
+summary(effectiveSize(as.mcmc(hmc_results[,1:10])))
+plot(hmc_results[,1],type="l")
+qqnorm(hmc_results[,1])
+qqline(hmc_results[,1])
+
+hmc_results  <- adapt_hmc(D=1000,maxIts = 100000,  targetAccept = 0.9)
+hmc_results <- hmc_results[10001:100000,]
+summary(effectiveSize(as.mcmc(hmc_results[,1:10])))
+plot(hmc_results[,1],type="l")
+qqnorm(hmc_results[,1])
+qqline(hmc_results[,1])
+
+################################################################################
+#
+####
+####### HMC with adaptive number of leapfrog steps (0.9 acceptance rate target)
+####
+#
+
+library(coda)
+
+
+target <- function(theta) {
+  output <- - sum(theta^2)/2
+  return(output)
+}
+
+grad <- function(theta) {
+  output <- - theta #numDeriv::grad(target,theta)
+  return(output)
+}
+
+
+delta <- function(n) {
+  return( min(0.01,n^(-0.5)) )
+}
+
+adapt_hmc <- function(D, maxIts, targetAccept=0.8, stepSize=1, L=20) {
+  
+  chain <- matrix(0,maxIts,D)
+  chain[1,] <- rnorm(D)
+  currentU  <- - target(chain[1,])
+  
+  totalAccept <- rep(0,maxIts)
+  Acceptances = 0 # total acceptances within adaptation run (<= SampBound)
+  SampBound = 50   # current total samples before adapting radius
+  SampCount = 0   # number of samples collected (adapt when = SampBound)
+  Proposed = 0
+  
+  for (i in 2:maxIts) {
+    proposalState    <- chain[i-1,]
+    momentum         <- rnorm(D)
+    currentK   <- sum(momentum^2)/2
+    
+    # leapfrog steps
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState)
+    for (l in 1:round(L)) {
+      proposalState <- proposalState + stepSize * momentum
+      if (l!=round(L)) momentum <- momentum + stepSize * grad(proposalState)
+    }
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState)
+    
+    # quantities for accept/reject
+    proposedU = - target(proposalState)
+    proposedK = sum(momentum^2)/2
+    u <- runif(1)
+    
+    if (log(u) < currentU + currentK - proposedU + proposedK) {
+      chain[i,]   <- proposalState
+      currentU    <- proposedU
+      totalAccept[i] <- 1
+      Acceptances = Acceptances + 1
+    } else {
+      chain[i,] <- chain[i-1,]
+    }
+    
+    SampCount <- SampCount + 1
+    
+    # tune
+    if (SampCount == SampBound) { 
+      AcceptRatio <- Acceptances / SampBound
+      if ( AcceptRatio > targetAccept ) {
+        L <- L * (1 + delta(i-1))
+      } else {
+        L <- L * (1 - delta(i-1))
+      }
+      
+      SampCount <- 0
+      Acceptances <- 0
+    }
+    
+    
+    if (i %% 100 == 0) cat("Iteration ", i,"\n","L: ", L, "\n") 
+  }
+  
+  cat("Acceptance rate: ", sum(totalAccept)/(maxIts-1))
+  return(chain)
+}
+
+#
+### D=1000
+#
+hmc_results  <- adapt_hmc(D=1000,maxIts = 100000,  targetAccept = 0.9,
+                          stepSize = 1.98)
+hmc_results <- hmc_results[10001:100000,]
+summary(effectiveSize(as.mcmc(hmc_results[,1:10])))
+plot(hmc_results[,1],type="l")
+qqnorm(hmc_results[,1])
+qqline(hmc_results[,1])
+
+
+# tune both L and stepsize?
+
+
