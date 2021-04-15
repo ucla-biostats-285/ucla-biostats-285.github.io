@@ -535,6 +535,97 @@ plot(sigma2s,type="l")  # sometimes data overpowers the prior
 ################################################################################
 #
 ####
+####### metropolis with different proposal variances
+####
+#
+
+library(coda)
+
+# target function is proportional to log pdf of D-dimensional spherical Gaussian
+target <- function(theta) {
+  output <- mvtnorm::dmvnorm(theta, log=TRUE)
+  return(output)
+}
+
+metropolis <- function(maxIts, D, sigma) {
+  chain <- matrix(0,maxIts,D) 
+  chain[1,] <- 0
+  
+  for(s in 2:maxIts) {
+    thetaStar <- rnorm(n=D,mean=chain[s-1,], sigma) # proposal
+    u         <- runif(1)
+    
+    logA      <- target(thetaStar) - target(chain[s-1,]) # target on log scale
+    if(log(u) < logA) {
+      chain[s,] <- thetaStar
+    } else {
+      chain[s,] <- chain[s-1,]
+    }
+    
+    if(s %% 100 == 0) cat(s,"\n")
+  }
+  
+  return(chain)
+}
+
+# sigma = 2
+results <- metropolis(maxIts=10000, D=10, sigma=2)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+acf(results[,1])
+acf(results[,1],lag=100)
+acf(results[,1],lag=200)
+acf(results[,1],lag=300)
+10000/300 # rough number of "independent" samples
+mcmc.obj <- as.mcmc(results)
+effectiveSize(mcmc.obj)
+
+# sigma = 1
+results <- metropolis(maxIts=10000, D=10, sigma=1)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+acf(results[,1])
+effectiveSize(as.mcmc(results))
+
+# sigma = 0.5
+results <- metropolis(maxIts=10000, D=10, sigma=0.1)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+acf(results[,1])
+effectiveSize(as.mcmc(results))
+
+# sigma = 2.4/sqrt(D)
+optimal <- 2.4/sqrt(10)
+results <- metropolis(maxIts=10000, D=10, sigma=optimal)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+acf(results[,1])
+effectiveSize(as.mcmc(results))
+
+
+#
+### D = 100
+#
+results <- metropolis(maxIts=10000, D=100, sigma=optimal)
+plot(results[,1],type="l")
+
+
+results <- metropolis(maxIts=10000, D=100, sigma=0.1)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+acf(results[,1])
+summary(effectiveSize(as.mcmc(results)))
+
+optimal <- 2.4/sqrt(100)
+results <- metropolis(maxIts=10000, D=100, sigma=optimal)
+plot(results[,1],type="l")
+plot(density(results[,1]))
+acf(results[,1])
+summary(effectiveSize(as.mcmc(results)))
+
+################################################################################
+#
+####
 ####### metropolis with adaptive covariance
 ####
 #
