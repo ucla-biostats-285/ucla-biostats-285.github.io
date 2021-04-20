@@ -495,6 +495,8 @@ for (i in 2:maxIts) {
 
 plot(mus,type="l")
 plot(sigma2s,type="l")
+mean(sigma2s)
+quantile(sigma2s,probs=c(0.025,0.975)) # 95% credible interval
 
 #
 ###
@@ -578,7 +580,7 @@ acf(results[,1],lag=200)
 acf(results[,1],lag=300)
 10000/300 # rough number of "independent" samples
 mcmc.obj <- as.mcmc(results)
-effectiveSize(mcmc.obj)
+coda::effectiveSize(mcmc.obj)
 
 # sigma = 1
 results <- metropolis(maxIts=10000, D=10, sigma=1)
@@ -587,7 +589,7 @@ plot(density(results[,1]))
 acf(results[,1])
 effectiveSize(as.mcmc(results))
 
-# sigma = 0.5
+# sigma = 0.1
 results <- metropolis(maxIts=10000, D=10, sigma=0.1)
 plot(results[,1],type="l")
 plot(density(results[,1]))
