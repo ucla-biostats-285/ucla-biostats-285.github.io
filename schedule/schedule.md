@@ -15,9 +15,9 @@ Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833
 |  3 | 4/13, 4/15 | Adaptive MCMC | | [Optimal Proposal Distributions and Adaptive MCMC](https://ucla-biostats-285.github.io/reading/AdaptiveMCMC.pdf), [Notes](https://ucla-biostats-285.github.io/notes/Optimal_Proposal_Dist.pdf); Further reading: [A tutorial](https://ucla-biostats-285.github.io/reading/andrieu-thoms.pdf), [Examples](https://ucla-biostats-285.github.io/reading/Examples.pdf)
 |  4 | 4/20, 4/22, 4/27 | Hamiltonian Monte Carlo | | [MCMC using Hamiltonian dynamics](https://ucla-biostats-285.github.io/reading/Neal2011.pdf), [Notes](https://ucla-biostats-285.github.io/notes/HMC.pdf), [Class notes](https://ucla-biostats-285.github.io/notes/hmcClassNotes.pdf)
 |  5 | 4/29, 5/4   | MCMC and neural networks | | [HMC using surrogate functions](https://ucla-biostats-285.github.io/reading/Zhang2017.pdf), [Generalizing HMC with neural networks](https://ucla-biostats-285.github.io/reading/Levy2018.pdf)
-
-[//]: # "|  6 | 5/4 | Subsampling MCMC | | [Stochastic gradient Langevin dynamics](https://ucla-biostats-285.github.io/reading/WellingTeh2011.pdf), [Stochastic gradient MCMC](https://ucla-biostats-285.github.io/reading/sgMCMC.pdf)"
-
+<!---
+|  6 | 5/4 | Subsampling MCMC | | [Stochastic gradient Langevin dynamics](https://ucla-biostats-285.github.io/reading/WellingTeh2011.pdf), [Stochastic gradient MCMC](https://ucla-biostats-285.github.io/reading/sgMCMC.pdf)
+--->
 | 6 | 5/6 | Guest Lecture [Matt Hoffman, Google Research](http://matthewdhoffman.com/) |||
 |  7 | 5/11 | Nonreversible MCMC | | [Bouncy particle sampler](https://ucla-biostats-285.github.io/reading/BPS.pdf),  [Piecewise deterministc Markov processes](https://ucla-biostats-285.github.io/reading/piecewiseDeterministic.pdf)| Abstract, due 5/13
 | 7 | 5/13 | Guest Lecture: Nonreversible MCMC [Zhenyu Zhang, UCLA Biostatistics](https://sites.google.com/view/zhenyuzhang) |||
