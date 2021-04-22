@@ -731,7 +731,7 @@ results <- randomWalk(N=N,
                       x0=rep(0,N),
                       maxIt = 10000) # acceptance should be CLOSER to 0.234
 plot(results[[1]][,1],type="l")
-effectiveSize(as.mcmc(results[[1]]))
+summary(effectiveSize(as.mcmc(results[[1]])))
 
 
 #
