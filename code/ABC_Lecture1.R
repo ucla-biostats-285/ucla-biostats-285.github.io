@@ -1154,3 +1154,85 @@ qqline(hmc_results[,1])
 # tune both L and stepsize?
 
 
+################################################################################
+#
+####
+####### HMC with stepsize adaptation works when nested in Gibbs sampler
+####
+#
+
+library(coda)
+target <- function(theta,scales) {
+  output <- - sum(scales*theta^2)/2
+  return(output)
+}
+grad <- function(theta,scales) {
+  output <- - scales*theta
+  return(output)
+}
+delta <- function(n) {
+  return( min(0.01,n^(-0.5)) )
+}
+adapt_hmc <- function(D, maxIts, targetAccept=0.8, stepSize=1, L=20) {
+  chain <- matrix(0,maxIts,D)
+  stepSize <- 1
+  chain[1,] <- rnorm(D)
+  scales <- 1 + rnorm(D,sd=0.1) # change surface
+  currentU  <- - target(chain[1,],scales)
+  totalAccept <- rep(0,maxIts)
+  Acceptances = 0 # total acceptances within adaptation run (<= SampBound)
+  SampBound = 50   # current total samples before adapting radius
+  SampCount = 0   # number of samples collected (adapt when = SampBound)
+  Proposed = 0
+  for (i in 2:maxIts) {
+    if (i>2) scales <- 1 + rnorm(D,sd=0.1) # change surface
+    proposalState    <- chain[i-1,]
+    momentum         <- rnorm(D)
+    currentU    <- - target(proposalState,scales)
+    currentK   <- sum(momentum^2)/2
+    # leapfrog steps
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState,scales)
+    for (l in 1:L) {
+      proposalState <- proposalState + stepSize * momentum
+      if (l!=L) momentum <- momentum + stepSize * grad(proposalState,scales)
+    }
+    momentum <- momentum + 0.5 * stepSize * grad(proposalState,scales)
+    # quantities for accept/reject
+    proposedU = - target(proposalState,scales)
+    proposedK = sum(momentum^2)/2
+    u <- runif(1)
+    if (log(u) < currentU + currentK - proposedU + proposedK) {
+      chain[i,]   <- proposalState
+      totalAccept[i] <- 1
+      Acceptances = Acceptances + 1
+    } else {
+      chain[i,] <- chain[i-1,]
+    }
+    SampCount <- SampCount + 1
+    # tune
+    if (SampCount == SampBound) { 
+      AcceptRatio <- Acceptances / SampBound
+      if ( AcceptRatio > targetAccept ) {
+        stepSize <- stepSize * (1 + delta(i-1))
+      } else {
+        stepSize <- stepSize * (1 - delta(i-1))
+      }
+      SampCount <- 0
+      Acceptances <- 0
+    }
+    if (i %% 100 == 0) cat("Iteration ", i,"\n","stepSize: ", stepSize, "\n") 
+  }
+  cat("Acceptance rate: ", sum(totalAccept)/(maxIts-1))
+  return(chain)
+}
+#
+### D=1000, different target accepts
+#
+hmc_results  <- adapt_hmc(D=1000,maxIts = 100000,  targetAccept = 0.234)
+hmc_results <- hmc_results[10001:100000,]
+summary(effectiveSize(as.mcmc(hmc_results[,1:10])))
+plot(hmc_results[,1],type="l")
+hmc_results  <- adapt_hmc(D=1000,maxIts = 100000,  targetAccept = 0.9)
+hmc_results <- hmc_results[10001:100000,]
+summary(effectiveSize(as.mcmc(hmc_results[,1:10])))
+plot(hmc_results[,1],type="l")
