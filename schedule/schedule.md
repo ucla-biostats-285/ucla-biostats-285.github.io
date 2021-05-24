@@ -21,5 +21,5 @@ Zoom link: <https://ucla.zoom.us/j/7120566052>, for call in dial +1-669-900-6833
 | 8 | 5/20 | Guest Lecture: Nonreversible MCMC [Zhenyu Zhang, UCLA Biostatistics](https://sites.google.com/view/zhenyuzhang) |||
 | 9 | 5/25 | Guest Lecture: Probabilistic Circuits [Guy Van den Broeck, UCLA CS](https://web.cs.ucla.edu/~guyvdb/) |||
 |  9 | 5/27 | Discrete state spaces | | [Informed proposals for local MCMC in discrete spaces](https://ucla-biostats-285.github.io/reading/zanella2020.pdf) |
-| 10 | 6/1 | Guest Lecture: Deep Learning and MCMC [Babak Shahbaba, UC Irvine Statistics](https://www.ics.uci.edu/~babaks/) | | |
-| 10 | 6/3 | Big Ideas | | |Final project, due 6/3
+| 10 | 6/1 | Discrete state spaces | | |
+| 10 | 6/3 | Guest Lecture: Deep Learning and MCMC [Babak Shahbaba, UC Irvine Statistics](https://www.ics.uci.edu/~babaks/)| | |Final project, due 6/3
