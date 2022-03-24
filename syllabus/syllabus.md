@@ -3,21 +3,20 @@ layout: course
 title: Biostats 285
 ---
 
-# Advanced Bayesian Computing - Spring 2021
+# Advanced Bayesian Computing - Spring 2022
 
 ## Syllabus
 
 ### Course Topics
 
-This 4-unit course covers recent developments in the Markov chain Monte Carlo (MCMC) literature with an emphasis on the challenges associated with both big data and high-dimensional statistical models.  The course starts with a quick review of the theoretical foundations of MCMC, Metropolis-Hastings and the Gibbs sampler.  Next, we cover Hamiltonian Monte Carlo and Riemannian Manifold Hamiltonian Monte Carlo.  The course then pivots to surrogate proposal methods and stochastic gradient MCMC and finishes by reviewing recent advances in non-reversible MCMC.
+This 4-unit course covers recent developments in the Markov chain Monte Carlo (MCMC) literature with an emphasis on the challenges associated with both big data and high-dimensional statistical models.  The course starts with a quick review of the theoretical foundations of MCMC, Metropolis-Hastings and the Gibbs sampler.  Next, we cover Hamiltonian Monte Carlo. In addition to learning advanced MCMC algorithms, students will also learn to use prominent MCMC software such as Nimble and Stan.
 
-The first portion of this course includes lectures and textbook reading assignments. After this, assignments include the reading of scholarly papers, and the majority of class time will be spent discussing these papers.  Although practical implementation is not emphasized, a final project involves the rigorous implementation of one or more of the methods encountered during the quarter.
+This course iterates between formal lectures and coding assignments. Students will develop their own MCMC code throughout, and the final project involves the rigorous implementation of one or more of the methods encountered during the quarter.
 
 
 ### Meetings
 
-Tues, 1-230pm @ Zoom <https://ucla.zoom.us/j/7120566052>\
-Thur, 1-230pm @ Zoom <https://ucla.zoom.us/j/7120566052>
+Tues/Thur, 1-230pm @ CHS 61235
 
 ### Instructor
 
@@ -74,11 +73,11 @@ Since the course will cover a collection of specialized topics in a variety of a
 
 ### Grading
 
-Grades will be based on the homework (50%) and final phylogenetic analysis project (50%).
+Grades will be based on the homework (50%) and final project (50%).
 
 ### Project
 
-A Final Project consists of either (1) the replication of results and comparison between two or more methods encountered in the course, (2) the development and successful application of a prototype method inspired by course content or (3) the replication of results and comparison between two or more methods to be agreed upon between student and instructor. One page project proposals are due 5/13 by 5PM via email (PDF). Statistical code and project manuscript (max. 10 typed pages) must be submitted to me via email (PDF) by the final day of instruction (6/3) by 5PM.
+A Final Project consists of either (1) the replication of results and comparison between two or more methods encountered in the course, (2) the development and successful application of a prototype method inspired by course content or (3) the replication of results and comparison between two or more methods to be agreed upon between student and instructor. One page project proposals are due 5/12 by 5PM via email (PDF). Statistical code and project manuscript (max. 10 typed pages) must be submitted to me via email (PDF) by the final day of instruction (6/2) by 5PM.
 
 ### Attendance
 
