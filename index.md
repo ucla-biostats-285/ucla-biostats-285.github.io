@@ -5,12 +5,13 @@ title: Biostats 285
 
 ## Course Description
 
-This 4-unit course covers recent developments in the Markov chain Monte Carlo (MCMC) literature with an emphasis on the challenges associated with both big data and high-dimensional statistical models.  The course starts with a quick review of the theoretical foundations of MCMC, Metropolis-Hastings and the Gibbs sampler.  Next, we cover Hamiltonian Monte Carlo and Riemannian Manifold Hamiltonian Monte Carlo.  The course then pivots to surrogate proposal methods and stochastic gradient MCMC and finishes by reviewing recent advances in non-reversible MCMC.
+This 4-unit course covers recent developments in the Markov chain Monte Carlo (MCMC) literature with an emphasis on the challenges associated with both big data and high-dimensional statistical models.  The course starts with a quick review of the theoretical foundations of MCMC, Metropolis-Hastings and the Gibbs sampler.  Next, we cover Hamiltonian Monte Carlo. In addition to learning advanced MCMC algorithms, students will also learn to use prominent MCMC software such as Nimble and Stan.
+
+This course iterates between formal lectures and coding assignments. Students will develop their own MCMC code throughout, and the final project involves the rigorous implementation of one or more of the methods encountered during the quarter.
 
 ## Time and Location
 
-Tues, 1-230pm @ Zoom <https://ucla.zoom.us/j/7120566052>\
-Thur, 1-230pm @ Zoom <https://ucla.zoom.us/j/7120566052>
+Tues/Thur, 1-230pm @ CHS 61235
 
 ## Instructor
 
