@@ -10,7 +10,7 @@ Biostats 285 _tentative_ schedule and handouts (expect frequent updates)
 
 | Week | Class Dates | Tentative Topic | Posts | Readings | Assignments
 |:-----------|:-----------|:------------|:------------|:------------|:------------|
-|  1-2 | 3/29, 3/31, 4/5, 4/7   | Review: Monte Carlo and classical MCMC | | [BIDA Ch. 6](https://ucla-biostats-285.github.io/reading/BIDA.pdf), Further reading: [Geyer's intro to MCMC](https://ucla-biostats-285.github.io/reading/GeyerIntro.pdf), [Tierney (1994)](https://ucla-biostats-285.github.io/reading/Tierney.pdf)
+|  1-2 | 3/29, 3/31, 4/5, 4/7   | Review: Monte Carlo and classical MCMC ([slides](https://ucla-biostats-285.github.io/slides/ABC_Lecture1.pdf)) | | [BIDA Ch. 6](https://ucla-biostats-285.github.io/reading/BIDA.pdf), Further reading: [Geyer's intro to MCMC](https://ucla-biostats-285.github.io/reading/GeyerIntro.pdf), [Tierney (1994)](https://ucla-biostats-285.github.io/reading/Tierney.pdf)
 |  3 | 4/12, 4/14 | Nimble tutorial | | 
 |  4 | 4/19, 4/21 | Adaptive MCMC | | [Optimal Proposal Distributions and Adaptive MCMC](https://ucla-biostats-285.github.io/reading/AdaptiveMCMC.pdf); Further reading: [A tutorial](https://ucla-biostats-285.github.io/reading/andrieu-thoms.pdf), [Examples](https://ucla-biostats-285.github.io/reading/Examples.pdf)
 |  5 |  4/26, 4/28 | Hamiltonian Monte Carlo | | [MCMC using Hamiltonian dynamics](https://ucla-biostats-285.github.io/reading/Neal2011.pdf), [Notes](https://ucla-biostats-285.github.io/notes/HMC.pdf), [Class notes](https://ucla-biostats-285.github.io/notes/hmcClassNotes.pdf)
