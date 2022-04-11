@@ -10,13 +10,14 @@ inverseCDF <- function (u,lambda) {
   return(-log(1-u)/lambda)
 }
 
-us <- runif(10000)
+us <- runif(n)
 thetas <- inverseCDF(us,lambda)
 
 hist(thetas)
-abline(v=mean(thetas),col="red",lwd=3)
+abline(v=mean(thetas),col="red",lwd=10)
+abline(v=1/5,lwd=3)
 
-qqplot(x=thetas, y=rexp(10000,rate=5))
+qqplot(x=thetas, y=rexp(n,rate=5))
 abline(a=0,b=1,col="red",lwd=3)
 
 ################################################################################
@@ -36,7 +37,7 @@ Pi <- mean(lssThn) * 4
 Pis <- function (S) {
   Us <- matrix(runif(2*S),S,2)
   Us <- Us*2 - 1
-
+  
   lssThn <- apply(Us, MARGIN = 1, FUN=function(x) sum(x^2)<1)
   Pi <- mean(lssThn) * 4
   
@@ -54,13 +55,13 @@ lines(sqrt(1/(5:2000)),col="red",lwd=3) # diminishing returns
 ################################################################################
 #
 ####
-####### rejection samplers for sine(0,pi)
+####### rejection samplers for sin(0,pi)/2
 ####
 #
 n <- 1000
 M <- 10 
 proposals <- runif(n,max=pi)
-envelope <- M/pi
+envelope <- M * 1/pi
 
 Us <- runif(n)
 acceptances <- Us < (sin(proposals)/2)/envelope
@@ -129,7 +130,7 @@ gaussiansTargetT <- function(N,maxIts) {
     normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
     estimates[s] <- sum(thetas * normalizedWeights) # compute mean of t distribution (0)
   }
-
+  
   return(estimates)
 }
 ests <- gaussiansTargetT(N=100,maxIts=1000)
@@ -185,6 +186,7 @@ dim(thetas)
 unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,100))
 normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
 plot(normalizedWeights)
+plot(log(normalizedWeights))
 plot(density(normalizedWeights))
 summary(normalizedWeights) # underflow
 
@@ -205,7 +207,7 @@ estimate <- colSums(thetas * normalizedWeights) # compute mean of t normals (0)
 plot(density(estimate))
 
 # higher dim = 200 / overpower with 10000 samples
-thetas <- rmvnorm(n=10000,sigma = diag(200),mean = rep(1,200))
+thetas <- rmvnorm(n=10000,sigma = diag(2000),mean = rep(1,2000))
 dim(thetas)
 
 unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,200))
@@ -227,8 +229,8 @@ library(markovchain)
 
 Q <- matrix(c(0,0,0.5,1,0.2,0.5,0,0.8,0),3,3)  # transition matrix
 mc <- new('markovchain',
-                     transitionMatrix = Q, 
-                     states = c('A','B','C'))
+          transitionMatrix = Q, 
+          states = c('A','B','C'))
 
 layout <- matrix(c(-2,0,0,1,2,0), ncol = 2, byrow = TRUE)
 plot(mc, layout = layout)
@@ -254,12 +256,13 @@ p
 sum(p) # sanity check
 p == p %*% Q 
 
-eig.obj <- eigen(t(Q))
+# eigen vectors
+eig.obj <- eigen(Q)
 eig.obj$values # hard to read
 Mod(eig.obj$values)
-
-- eig.obj$vectors * sqrt(sum(p^2)) # r scales to norm 1
-
+eig.vecs <- - eig.obj$vectors * sqrt(3) # r scales to norm 1
+left.eig.vecs <- solve(eig.vecs)
+rowSums(left.eig.vecs)
 
 # actually simulate from the markov chain 
 n <- 10000
@@ -277,6 +280,34 @@ p*n # stationary probabilities * iterations
 
 # get true mean
 sum(p*c(1,2,3)^2)
+
+#
+### Detailed balance
+#
+library(markovchain)
+m <- 2
+p <- c(m,1,1,1,m)/(2*m+3)
+Q <- matrix(c(1-1/(2*m),1/2,0,0,0,
+              1/(2*m),0,1/2,0,0,
+              0,1/2,0,1/2,0,
+              0,0,1/2,0,1/(2*m),
+              0,0,0,1/2,1-1/(2*m)),
+            5,5)
+mc <- new('markovchain',
+          transitionMatrix = Q, 
+          states = c('A','B','C','D','E'))
+plot(mc)
+
+p[1]*Q[1,2] == p[2]*Q[2,1]
+p[3]*Q[3,4] == p[4]*Q[4,3]
+
+eig.obj <- eigen(Q)
+eig.obj$values 
+eig.vecs <- - eig.obj$vectors * sqrt(5) # r scales to norm 1
+left.eig.vecs <- solve(eig.vecs)
+rowSums(left.eig.vecs)
+
+p%*%Q == p
 
 # so, what's the point?
 
@@ -345,7 +376,7 @@ plot(density(results[,1]))
 
 results <- metropolis(100000, D)
 plot(results[,1],type="l")
-plot(density(results[,1]))
+plot(density(results[100000,1]))
 
 D <- 100 # curse of dimensionality
 results <- metropolis(10000, D)
@@ -377,9 +408,9 @@ for(s in 2:maxIts) {
   u         <- runif(1)
   
   logA      <- target(thetaStar) - target(chain[s-1,]) + # targets
-               sum(log(truncnorm::dtruncnorm(x=chain[s-1,],a=0, mean=thetaStar))) -
-               sum(log(truncnorm::dtruncnorm(x=thetaStar,a=0, mean=chain[s-1,])))
-                
+    sum(log(truncnorm::dtruncnorm(x=chain[s-1,],a=0, mean=thetaStar))) -
+    sum(log(truncnorm::dtruncnorm(x=thetaStar,a=0, mean=chain[s-1,])))
+  
   if(log(u) < logA) {
     chain[s,] <- thetaStar
   } else {
@@ -453,6 +484,7 @@ hist(results[,1],freq = FALSE,breaks = 20)
 lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
 
 D <- 100 # curse of dimensionality
+plot(results[,1],type="l")
 results <- metropolis_hastings(10000, 20)
 hist(results[,1],freq = FALSE,breaks = 20)
 lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
@@ -854,18 +886,18 @@ metropolis <- function(maxIts,D) {
 
 
 hmc <- function(D, maxIts, stepSize=0.01) {
-
+  
   chain <- matrix(0,maxIts,D)
   acceptances <- 0
   L <- 10 # number of leapfrog steps
   chain[1,] <- rnorm(D)
   currentU  <- - target(chain[1,])
-
+  
   for (i in 2:maxIts) {
     proposalState    <- chain[i-1,]
     momentum         <- rnorm(D)
     currentK   <- sum(momentum^2)/2
-
+    
     # leapfrog steps
     momentum <- momentum + 0.5 * stepSize * grad(proposalState)
     for (l in 1:L) {
@@ -1013,7 +1045,7 @@ adapt_hmc <- function(D, maxIts, targetAccept=0.8, stepSize=1, L=20) {
     }
     
     SampCount <- SampCount + 1
-
+    
     # tune
     if (SampCount == SampBound) { 
       AcceptRatio <- Acceptances / SampBound
@@ -1022,7 +1054,7 @@ adapt_hmc <- function(D, maxIts, targetAccept=0.8, stepSize=1, L=20) {
       } else {
         stepSize <- stepSize * (1 - delta(i-1))
       }
-  
+      
       SampCount <- 0
       Acceptances <- 0
     }
